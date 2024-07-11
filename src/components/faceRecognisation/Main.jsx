@@ -264,7 +264,8 @@ const Main = () => {
 
   return (
     <div className="flex flex-col items-center justify-start h-screen w-full">
-      <Header />
+      {/* <Header /> */}
+      <h1 className='font-bold text-3xl text-black mt-5'>Face Recognisation Demo</h1>
       {!showCameraPreview && <Form setShowCameraPreview={setShowCameraPreview} setAction={setAction} />}
       {showCameraPreview && (
         <div className="relative w-full h-full">
@@ -276,7 +277,7 @@ const Main = () => {
               </button>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full bg-white relative">
+            <div className="flex flex-col items-center justify-center h-full bg-[#f5f5f5] relative">
               <div className='absolute top-10 inset-x-0 max-md:w-[90%] max-lg:w-[80%] lg:w-[55%] m-auto max-sm:mt-14'>
                 <WebCame setIsPersonVisible={setIsPersonVisible} isPersonVisible={isPersonVisible} action={action}/>
                 {isPersonVisible && recognisedPerson && (
