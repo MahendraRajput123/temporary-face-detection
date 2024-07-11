@@ -186,7 +186,7 @@ const Main = () => {
   const [isPersonVisible, setIsPersonVisible] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('http://192.168.1.23:5000', {
+    const newSocket = io('wss://ebitsvisionai.in', {
       transports: ['websocket'],
     });
     setSocket(newSocket);
@@ -265,7 +265,7 @@ const Main = () => {
   return (
     <div className="flex flex-col items-center justify-start h-screen w-full">
       {/* <Header /> */}
-      <h1 className='font-bold text-3xl text-black mt-5'>Face Recognisation Demo</h1>
+      <h1 className='font-bold text-3xl text-black mt-5'>Face Recognisation</h1>
       {!showCameraPreview && <Form setShowCameraPreview={setShowCameraPreview} setAction={setAction} />}
       {showCameraPreview && (
         <div className="relative w-full h-full">
