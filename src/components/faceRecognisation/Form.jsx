@@ -85,6 +85,13 @@ const Form = ({ setShowCameraPreview, setAction }) => {
                     <button className="inline-flex text-white bg-blue-700 border-0 py-2 px-6 max-sm:px-2 max-sm:text-[1rem] max-sm:m-auto focus:outline-none hover:bg-blue-600 rounded text-lg" onClick={onSubmit}>Start Capturing</button>
                 </div>
             }
+
+            {
+                btnIndex === 1 &&
+                 <h1 className='font-bold mt-10 text-2xl mx-8'>
+                  <span className='text-red-700 font-extrabold'>Note:-</span> Please keep your face in the centre of the camera. The registration process will take only 8 seconds. 
+                 </h1>
+             }
         </>
     )
 }

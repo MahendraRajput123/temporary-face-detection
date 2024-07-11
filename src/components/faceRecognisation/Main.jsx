@@ -108,7 +108,7 @@ const Main = () => {
             <div className="flex flex-col items-center justify-center h-full bg-[#f5f5f5] relative">
               <div className='absolute top-10 inset-x-0 max-md:w-[90%] max-lg:w-[80%] lg:w-[55%] m-auto max-sm:mt-14'>
                 <WebCame setIsPersonVisible={setIsPersonVisible} isPersonVisible={isPersonVisible} action={action}/>
-                {isPersonVisible && recognisedPerson && (
+                {isPersonVisible && recognisedPerson && recognisedPerson.toLowerCase() != "unknown"&& (
                   <h1 className="text-black text-3xl font-bold my-3">Recognised Person: {recognisedPerson}</h1>
                 )}
                 {isPersonVisible && snapshotCount > 0 && (
