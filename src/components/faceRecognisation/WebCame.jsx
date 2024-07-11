@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useCallback, useState, useRef } from 'react'
 import Webcam from 'react-webcam';
-import { CameraOptions, useFaceDetection } from 'react-use-face-detection';
+import { useFaceDetection } from 'react-use-face-detection';
 import FaceDetection from '@mediapipe/face_detection';
 import { Camera } from '@mediapipe/camera_utils';
 
-const WebCam = ({ setIsPersonVisible }) => {
-
+const WebCam = ({ setIsPersonVisible, action, isPersonVisible }) => {
     const width = 900;
     const height = 600;
-    const { webcamRef, boundingBox, isLoading, detected, facesDetected } = useFaceDetection({
+    const { webcamRef, detected } = useFaceDetection({
         faceDetectionOptions: {
             model: 'short',
         },
@@ -23,42 +22,45 @@ const WebCam = ({ setIsPersonVisible }) => {
             }),
     });
 
-    const takeSnapshot = () => {
+    const takeSnapshot = useCallback(() => {
         const snapshot = webcamRef.current.getScreenshot();
-        localStorage.setItem('snapshot', snapshot);
-    };
-
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-          takeSnapshot();
-        }, 500);
-    
-        return () => {
-          clearInterval(intervalId);
-          if (webcamRef.current) {
-            webcamRef.current.stream?.getTracks().forEach(track => track.stop());
-          }
-        };
-      }, []);
-
-    useEffect(() => {
-        if (detected) {
-            setIsPersonVisible(true);
+        if (snapshot && isPersonVisible) {
+            localStorage.setItem('snapshot', snapshot);
         } else {
-            setIsPersonVisible(false);
+            console.log('Failed to capture snapshot');
         }
+    }, [webcamRef, action, isPersonVisible]);
+
+    useEffect(() => {
+        let intervalId;
+        intervalId = setInterval(takeSnapshot, 100);
+
+        return () => {
+            clearInterval(intervalId);
+            if (webcamRef.current) {
+                webcamRef.current.stream?.getTracks().forEach(track => track.stop());
+            }
+        };
+    }, [takeSnapshot, webcamRef, action]);
+
+    useEffect(() => {
+        setIsPersonVisible(detected);
     }, [detected, setIsPersonVisible]);
 
+    useEffect(() => {
+        // Cleanup function to remove snapshots when component unmounts
+        return () => {
+            localStorage.removeItem('snapshot');
+        };
+    }, [action]);
+
     return (
-        <>
-            <Webcam
-                ref={webcamRef}
-                forceScreenshotSourceSize
-                className="w-full object-cover rounded-3xl"
-            />
-        </>
-    )
+        <Webcam
+            ref={webcamRef}
+            forceScreenshotSourceSize
+            className="w-full object-cover rounded-3xl"
+        />
+    );
 }
 
-export default WebCam
+export default WebCam;
