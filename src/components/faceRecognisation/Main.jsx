@@ -14,8 +14,10 @@ const Main = () => {
   const [isPersonVisible, setIsPersonVisible] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('wss://ebitsvisionai.in', {
+    const newSocket = io('ws://192.168.1.23:5000', {
       transports: ['websocket'],
+      'timeout':5000,
+      'connect timeout': 5000
     });
     setSocket(newSocket);
 
@@ -82,13 +84,13 @@ const Main = () => {
     return () => clearInterval(intervalId);
   }, [showCameraPreview, action, isPersonVisible, snapshotCount, socket, takeSnapshot]);
 
-  // useEffect(() => {
-  //   if (showCameraPreview) {
-  //     navigator.mediaDevices.getUserMedia({ video: true })
-  //       .then(() => setCameraError(''))
-  //       .catch(handleCameraError);
-  //   }
-  // }, [showCameraPreview, handleCameraError]);
+  useEffect(() => {
+    if (showCameraPreview) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(() => setCameraError(''))
+        .catch(handleCameraError);
+    }
+  }, [showCameraPreview, handleCameraError]);
 
   return (
     <div className="flex flex-col items-center justify-start h-screen w-full">
