@@ -101,11 +101,6 @@ const FaceRecognition = () => {
                     <canvas ref={canvasRef} className="hidden"></canvas>
                 </div>
                 <div className="p-4">
-                    {warning && (
-                        <h1 className="text-red-500 text-xl font-bold text-center mb-4">
-                            Please center your face in front of the camera to detect correctly
-                        </h1>
-                    )}
                     {!warning && recognisedPerson && recognisedPerson.toLowerCase() !== "unknown" && (
                         <h1 className="text-green-600 text-2xl font-bold text-center mb-4">
                             Recognised Person: {recognisedPerson}

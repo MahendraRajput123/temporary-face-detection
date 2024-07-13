@@ -111,11 +111,11 @@ const FaceRegistration = () => {
                 ></video>
                 <canvas ref={canvasRef} className="hidden"></canvas>
                 <h1 className="text-black text-3xl font-bold my-3 text-center">
-                    {
+                    {/* {
                         warning ?
-                            "Please center your face in front of the camera to detect correctly" :
+                            "Please center your face in front of the camera to detect correctly" : */}
                             "Training In Progress... " + capturedImages
-                    }
+                    {/* } */}
                 </h1>
             </div>
         </div>
