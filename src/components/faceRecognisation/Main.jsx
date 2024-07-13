@@ -25,7 +25,7 @@ const Main = () => {
       setRecognisedPerson(name);
     });
 
-    return () => newSocket.disconnect();
+    // return () => newSocket.disconnect();
   }, []);
 
   const handleCameraError = useCallback((err) => {
