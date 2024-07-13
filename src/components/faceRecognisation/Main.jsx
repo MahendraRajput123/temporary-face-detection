@@ -14,7 +14,7 @@ const Main = () => {
   const [isPersonVisible, setIsPersonVisible] = useState(false);
 
   useEffect(() => {
-    const newSocket = io('ws://192.168.1.23:5000', {
+    const newSocket = io('https://ebitsvisionai.in/', {
       transports: ['websocket'],
       'timeout':5000,
       'connect timeout': 5000
