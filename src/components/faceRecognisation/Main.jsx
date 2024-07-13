@@ -5,7 +5,7 @@ import Header from './Header.jsx'
 import WebCame from './WebCame.jsx'
 
 const Main = () => {
-  const [socket, setSocket] = useState(null);
+  // const [socket, setSocket] = useState(null);
   const [showCameraPreview, setShowCameraPreview] = useState(false);
   const [cameraError, setCameraError] = useState('');
   const [action, setAction] = useState('recognised');
@@ -13,20 +13,20 @@ const Main = () => {
   const [recognisedPerson, setRecognisedPerson] = useState('');
   const [isPersonVisible, setIsPersonVisible] = useState(false);
 
-  useEffect(() => {
-    const newSocket = io('https://ebitsvisionai.in/', {
-      transports: ['websocket'],
-      'timeout':5000,
-      'connect timeout': 5000
-    });
-    setSocket(newSocket);
+  // useEffect(() => {
+  //   const newSocket = io('https://ebitsvisionai.in/', {
+  //     transports: ['websocket'],
+  //     'timeout':5000,
+  //     'connect timeout': 5000
+  //   });
+  //   setSocket(newSocket);
 
-    newSocket.on('recognised-person', ({ name }) => {
-      setRecognisedPerson(name);
-    });
+  //   newSocket.on('recognised-person', ({ name }) => {
+  //     setRecognisedPerson(name);
+  //   });
 
-    // return () => newSocket.disconnect();
-  }, []);
+  //   return () => newSocket.disconnect();
+  // }, []);
 
   const handleCameraError = useCallback((err) => {
     let errorMessage = 'An error occurred while accessing the camera.';
@@ -41,56 +41,56 @@ const Main = () => {
     console.error('Error accessing camera:', err);
   }, []);
 
-  const takeSnapshot = useCallback(() => {
-    const snapshot = localStorage.getItem('snapshot');
-    if (!snapshot || !socket) return;
+  // const takeSnapshot = useCallback(() => {
+  //   const snapshot = localStorage.getItem('snapshot');
+  //   if (!snapshot || !socket) return;
 
-    const eventName = action === 'recognised' ? 'recognised' : 'registered';
-    const payload = { image: snapshot };
-    if (action === 'registered') {
-      payload.name = localStorage.getItem('name');
-    }
-    socket.emit(eventName, payload);
-  }, [action, socket]);
+  //   const eventName = action === 'recognised' ? 'recognised' : 'registered';
+  //   const payload = { image: snapshot };
+  //   if (action === 'registered') {
+  //     payload.name = localStorage.getItem('name');
+  //   }
+  //   socket.emit(eventName, payload);
+  // }, [action, socket]);
 
-  useEffect(() => {
-    if (!showCameraPreview) return;
+  // useEffect(() => {
+  //   if (!showCameraPreview) return;
 
-    let intervalId;
-    if (action === 'recognised' || (action === 'registered' && isPersonVisible)) {
-      intervalId = setInterval(() => {
+  //   let intervalId;
+  //   if (action === 'recognised' || (action === 'registered' && isPersonVisible)) {
+  //     intervalId = setInterval(() => {
 
-        // If the action is 'registered' and 25 snapshots have been taken, train the model
-        if (action === 'registered' && snapshotCount >= 24) {
+  //       // If the action is 'registered' and 25 snapshots have been taken, train the model
+  //       if (action === 'registered' && snapshotCount >= 24) {
 
-          // Emit a 'train' event to the server
-          socket.emit('train', { name: localStorage.getItem('name') });
-          setShowCameraPreview(false);
-          setSnapshotCount(0);
-          window.location.reload();
-        } else {
-          // Take a snapshot every 500ms and send it to the server
-          takeSnapshot();
+  //         // Emit a 'train' event to the server
+  //         socket.emit('train', { name: localStorage.getItem('name') });
+  //         setShowCameraPreview(false);
+  //         setSnapshotCount(0);
+  //         window.location.reload();
+  //       } else {
+  //         // Take a snapshot every 500ms and send it to the server
+  //         takeSnapshot();
 
-          // Increment snapshot count if the action is 'registered'
-          if (action === 'registered') {
-            setSnapshotCount(count => count + 1);
-          }
+  //         // Increment snapshot count if the action is 'registered'
+  //         if (action === 'registered') {
+  //           setSnapshotCount(count => count + 1);
+  //         }
 
-        }
-      }, 100);
-    }
+  //       }
+  //     }, 100);
+  //   }
 
-    return () => clearInterval(intervalId);
-  }, [showCameraPreview, action, isPersonVisible, snapshotCount, socket, takeSnapshot]);
+  //   return () => clearInterval(intervalId);
+  // }, [showCameraPreview, action, isPersonVisible, snapshotCount, socket, takeSnapshot]);
 
-  useEffect(() => {
-    if (showCameraPreview) {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(() => setCameraError(''))
-        .catch(handleCameraError);
-    }
-  }, [showCameraPreview, handleCameraError]);
+  // useEffect(() => {
+  //   if (showCameraPreview) {
+  //     navigator.mediaDevices.getUserMedia({ video: true })
+  //       .then(() => setCameraError(''))
+  //       .catch(handleCameraError);
+  //   }
+  // }, [showCameraPreview, handleCameraError]);
 
   return (
     <div className="flex flex-col items-center justify-start h-screen w-full">
@@ -109,7 +109,7 @@ const Main = () => {
           ) : (
             <div className="flex flex-col items-center justify-center h-full bg-[#f5f5f5] relative">
               <div className='absolute top-10 inset-x-0 max-md:w-[90%] max-lg:w-[80%] lg:w-[55%] m-auto max-sm:mt-14'>
-                <WebCame setIsPersonVisible={setIsPersonVisible} isPersonVisible={isPersonVisible} action={action}/>
+                {/* <WebCame setIsPersonVisible={setIsPersonVisible} isPersonVisible={isPersonVisible} action={action}/> */}
                 {isPersonVisible && recognisedPerson && recognisedPerson.toLowerCase() != "unknown"&& (
                   <h1 className="text-black text-3xl font-bold my-3">Recognised Person: {recognisedPerson}</h1>
                 )}

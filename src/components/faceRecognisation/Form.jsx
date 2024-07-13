@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
-import { IoArrowBackCircleOutline } from "react-icons/io5";
-import BackNavigation from '../common/BackNavigation.jsx'
-// require("../../assets/detection.jpg")
+import { useNavigate } from "react-router-dom";
 
 const Form = ({ setShowCameraPreview, setAction }) => {
     const [name, setName] = useState('');
     const [btnIndex, setBtnIndex] = useState(null);
+    const navigate = useNavigate();
     const namePattern = /^[A-Za-z\s]+$/;
 
     const onSubmit = () => {
@@ -20,14 +19,12 @@ const Form = ({ setShowCameraPreview, setAction }) => {
             return;
         }
         
-        localStorage.setItem('name', name);
-        setShowCameraPreview(true);
-        setAction('registered');
+        // Navigate to /face-register with payload
+        navigate('/face-register', { state: { name } });
     };
 
     const recognised = () => {
-        setShowCameraPreview(true);
-        setAction('recognised');
+        navigate('/face-recognisation');
     }
 
     console.log(name)
