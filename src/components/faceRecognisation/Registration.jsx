@@ -114,7 +114,7 @@ const FaceRegistration = () => {
                     {/* {
                         warning ?
                             "Please center your face in front of the camera to detect correctly" : */}
-                            "Training In Progress... " + capturedImages
+                            {"Training In Progress... " + capturedImages}
                     {/* } */}
                 </h1>
             </div>
