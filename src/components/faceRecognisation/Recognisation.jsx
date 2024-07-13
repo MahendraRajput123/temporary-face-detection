@@ -20,6 +20,7 @@ const FaceRecognition = () => {
 
         return new Promise((resolve) => {
             video.onloadedmetadata = () => {
+                video.play();
                 resolve(video);
             };
         });
@@ -32,7 +33,7 @@ const FaceRecognition = () => {
     const detectFace = useCallback(async (video) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        const displaySize = { width: video.width, height: video.height };
+        const displaySize = { width: video.videoWidth, height: video.videoHeight };
         faceapi.matchDimensions(canvas, displaySize);
 
         const detectInterval = setInterval(async () => {
@@ -40,7 +41,7 @@ const FaceRecognition = () => {
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
             if (resizedDetections.length > 0) {
-                context.drawImage(video, 0, 0, video.width, video.height);
+                context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const base64Image = canvas.toDataURL('image/png');
                 socketRef.current.emit('recognised', { image: base64Image });
                 setWarning('');
@@ -87,19 +88,37 @@ const FaceRecognition = () => {
     };
 
     return (
-        <div>
-            <video ref={videoRef} width="640" height="480" autoPlay muted></video>
-            <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
-            <div style={{ color: 'red' }}>{warning}</div>
-            {warning && (
-                <h1 className="text-black text-3xl font-bold my-3">Please center your face in front of the camera to detect correctly</h1>
-            )}
-            {recognisedPerson && recognisedPerson.toLowerCase() !== "unknown" && (
-                <h1 className="text-black text-3xl font-bold my-3">Recognised Person: {recognisedPerson}</h1>
-            )}
-            <button onClick={handleBackButton} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
-                Back
-            </button>
+        <div className="flex flex-col items-center justify-center w-full min-h-screen bg-gray-100 p-4">
+            <div className="w-full max-w-3xl bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="relative">
+                    <video 
+                        ref={videoRef} 
+                        className="w-full h-auto"
+                        autoPlay 
+                        muted
+                        playsInline
+                    ></video>
+                    <canvas ref={canvasRef} className="hidden"></canvas>
+                </div>
+                <div className="p-4">
+                    {warning && (
+                        <h1 className="text-red-500 text-xl font-bold text-center mb-4">
+                            Please center your face in front of the camera to detect correctly
+                        </h1>
+                    )}
+                    {!warning && recognisedPerson && recognisedPerson.toLowerCase() !== "unknown" && (
+                        <h1 className="text-green-600 text-2xl font-bold text-center mb-4">
+                            Recognised Person: {recognisedPerson}
+                        </h1>
+                    )}
+                    <button 
+                        onClick={handleBackButton} 
+                        className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+                    >
+                        Back
+                    </button>
+                </div>
+            </div>
         </div>
     );
 };
