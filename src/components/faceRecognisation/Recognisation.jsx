@@ -48,7 +48,7 @@ const FaceRecognition = () => {
             } else {
                 setWarning('Face not detected!');
             }
-        }, 50);
+        }, 100);
 
         return () => clearInterval(detectInterval);
     }, []);
