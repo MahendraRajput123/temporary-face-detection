@@ -14,6 +14,20 @@ const FaceRegistration = () => {
     const streamRef = useRef(null);
     const socketRef = useRef(null);
     const intervalRef = useRef(null);
+    const [generatedString, setGeneratedString] = useState(() => {
+        const digits = '0123456789';
+        const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        
+        // Ensure the first character is a digit
+        let result = digits.charAt(Math.floor(Math.random() * digits.length));
+        
+        // Generate the remaining 15 characters
+        for (let i = 1; i < 16; i++) {
+          result += alphanumeric.charAt(Math.floor(Math.random() * alphanumeric.length));
+        }
+        
+        return result;
+      });
 
     const setupCamera = useCallback(async () => {
         const video = videoRef.current;
@@ -68,7 +82,7 @@ const FaceRegistration = () => {
             if (resizedDetections.length > 0) {
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const base64Image = canvas.toDataURL('image/png');
-                socketRef.current.emit('registered', { image: base64Image, name: name });
+                socketRef.current.emit('registered', { image: base64Image, name: `${name}_${generatedString}`});
                 setCapturedImages(prev => {
                     const newCount = prev + 1;
                     if (newCount >= 25) {
