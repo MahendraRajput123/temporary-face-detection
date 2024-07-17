@@ -11,6 +11,7 @@ const FaceRegistration = () => {
     const canvasRef = useRef();
     const [warning, setWarning] = useState('');
     const [capturedImages, setCapturedImages] = useState(0);
+    const [progressPercentage, setProgressPercentage] = useState(0);
     const streamRef = useRef(null);
     const socketRef = useRef(null);
     const intervalRef = useRef(null);
@@ -88,6 +89,7 @@ const FaceRegistration = () => {
                     if (newCount >= 25) {
                         completeRegistration();
                     }
+                    setProgressPercentage((newCount / 25) * 100);
                     return newCount;
                 });
                 setWarning('');
@@ -114,23 +116,28 @@ const FaceRegistration = () => {
     }, []);
 
     return (
-        <div className="flex items-center justify-center w-full h-screen">
-            <div className="w-full sm:w-3/4 lg:w-1/2">
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="w-full sm:w-3/4 lg:w-1/2 p-4 bg-white rounded-lg shadow-md">
                 <video
                     ref={videoRef}
-                    className="w-full h-auto mx-auto"
+                    className="w-full h-auto mx-auto rounded-lg"
                     autoPlay
                     muted
                     playsInline
                 ></video>
                 <canvas ref={canvasRef} className="hidden"></canvas>
-                <h1 className="text-black text-3xl font-bold my-3 text-center">
-                    {/* {
-                        warning ?
-                            "Please center your face in front of the camera to detect correctly" : */}
-                            {"Training In Progress... " + capturedImages}
-                    {/* } */}
-                </h1>
+                <div className="w-full h-6 bg-gray-200 rounded-full overflow-hidden relative my-3">
+                    <div
+                        className="h-full bg-gradient-to-r from-blue-700 to-blue-500 transition-all duration-300 ease-in-out"
+                        style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-semibold text-gray-700">
+                            {Math.round(progressPercentage)}%
+                        </span>
+                    </div>
+                </div>
+                {warning && <p className="text-red-500 text-center mt-2">{warning}</p>}
             </div>
         </div>
     );
