@@ -10,7 +10,7 @@ const Main = () => {
   const navigate = useNavigate();
 
   const showToaster = () => {
-    toast.success('Face Recognised Successfully', {
+    toast.success(message, {
         position: "top-right",
         autoClose: 2000,
         hideProgressBar: false,
