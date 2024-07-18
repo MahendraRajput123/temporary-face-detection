@@ -62,7 +62,7 @@ const FaceRegistration = () => {
     const completeRegistration = useCallback(() => {
         socketRef.current.emit('train', { name: name });
         releaseResources();
-        navigate('/');
+        navigate('/',{ state: { message: "Face Register Successfully" } });
     }, [name, navigate, releaseResources]);
 
     const detectFace = useCallback(async (video) => {
@@ -137,7 +137,7 @@ const FaceRegistration = () => {
                         </span>
                     </div>
                 </div>
-                {warning && <p className="text-red-500 text-center mt-2">{warning}</p>}
+               <p className="text-red-500 text-center mt-2">{warning && warning}</p>
             </div>
         </div>
     );

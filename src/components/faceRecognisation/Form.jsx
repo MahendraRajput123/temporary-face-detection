@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
-const Form = ({ setShowCameraPreview, setAction }) => {
+const Form = () => {
     const [name, setName] = useState('');
     const [btnIndex, setBtnIndex] = useState(null);
     const navigate = useNavigate();
@@ -27,17 +27,8 @@ const Form = ({ setShowCameraPreview, setAction }) => {
         navigate('/face-recognisation');
     }
 
-    console.log(name)
     return (
         <>
-
-            {/* {
-                btnIndex === 1 &&
-                <div className='w-screen py-2 px-2'>
-                    <IoArrowBackCircleOutline  className='text-blue-800 hover:text-blue-500 text-5xl' onClick={()=> setBtnIndex(2)}/>
-                </div>
-            } */}
-
             {
                 btnIndex !== 1 &&
                 <img
