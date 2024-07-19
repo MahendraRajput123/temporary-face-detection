@@ -96,7 +96,7 @@ const FaceRegistration = () => {
             } else {
                 setWarning('Face not detected!');
             }
-        }, 100);
+        }, 300);
     }, [name, completeRegistration]);
 
     useEffect(() => {
