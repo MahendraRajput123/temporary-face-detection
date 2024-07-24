@@ -121,8 +121,8 @@ const FaceRegistration = () => {
         const context = canvas.getContext('2d');
         const displaySize = { width: video.videoWidth, height: video.videoHeight };
         faceapi.matchDimensions(canvas, displaySize);
-
-        intervalRef.current = setInterval(async () => {
+    
+        const detect = async () => {
             if (capturedImages >= 25) {
                 completeRegistration();
                 return;
@@ -133,32 +133,33 @@ const FaceRegistration = () => {
 
             if (resizedDetections.length > 0) {
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const base64Image = canvas.toDataURL('image/png');
-                // Usage
+                const base64Image = canvas.toDataURL('image/jpeg', 0.8);
                 reduceImageSize(base64Image, 4).then((compressedImage) => {
                     console.log(`Compressed image size: ${compressedImage.length / 1024} KB`);
-                    console.log(compressedImage)
-                    socketRef.current.emit('registered', { image: compressedImage, name: `${name}_${generatedString}`});
+                    socketRef.current.emit('registered', { image: compressedImage, name: `${name}_${generatedString}` });
+                    setCapturedImages(prev => {
+                        const newCount = prev + 1;
+                        if (newCount >= 25) {
+                            completeRegistration();
+                        }
+                        setProgressPercentage((newCount / 25) * 100);
+                        return newCount;
+                    });
                     setWarning('');
                 }).catch((error) => {
                     console.error('Error reducing image size:', error);
-                });
-
-                socketRef.current.emit('registered', { image: base64Image, name: `${name}_${generatedString}`});
-                setCapturedImages(prev => {
-                    const newCount = prev + 1;
-                    if (newCount >= 25) {
-                        completeRegistration();
-                    }
-                    setProgressPercentage((newCount / 25) * 100);
-                    return newCount;
                 });
                 setWarning('');
             } else {
                 setWarning('Face not detected!');
             }
-        }, 300);
+    
+            requestAnimationFrame(detect);
+        };
+    
+        requestAnimationFrame(detect);
     }, [name, completeRegistration]);
+    
 
     useEffect(() => {
         socketRef.current = io('https://ebitsvisionai.in', {
