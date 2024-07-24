@@ -26,8 +26,59 @@ const FaceRecognition = () => {
         });
     }, []);
 
+    const reduceImageSize = (base64Image, targetSizeKB) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.src = base64Image;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let width = img.width;
+                let height = img.height;
+                let quality = 0.9; // Initial quality
+
+                // Define the target size in bytes (4KB)
+                const targetSizeBytes = targetSizeKB * 1024;
+
+                // Resize and compress image until it reaches the target size
+                const compressImage = () => {
+                    // Calculate new dimensions
+                    width = Math.floor(width * 0.9);
+                    height = Math.floor(height * 0.9);
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw the image onto the canvas
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Convert the canvas to a base64 image
+                    const compressedImage = canvas.toDataURL('image/jpeg', quality);
+
+                    // Calculate the size of the compressed image in bytes
+                    const stringLength = compressedImage.length;
+                    const sizeInBytes = 4 * Math.ceil((stringLength / 3)) * 0.5624896334383812;
+
+                    if (sizeInBytes > targetSizeBytes && quality > 0.1) {
+                        quality -= 0.1;
+                        compressImage();
+                    } else {
+                        resolve(compressedImage);
+                    }
+                };
+
+                compressImage();
+            };
+
+            img.onerror = (error) => reject(error);
+        });
+    };
+
     const loadModels = useCallback(async () => {
         await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+        await faceapi.nets.faceRecognitionNet.loadFromUri('/models');
     }, []);
 
     const detectFace = useCallback(async (video) => {
@@ -43,8 +94,15 @@ const FaceRecognition = () => {
             if (resizedDetections.length > 0) {
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const base64Image = canvas.toDataURL('image/png');
-                socketRef.current.emit('recognised', { image: base64Image });
-                setWarning('');
+                // Usage
+                reduceImageSize(base64Image, 4).then((compressedImage) => {
+                    console.log(`Compressed image size: ${compressedImage.length / 1024} KB`);
+                    console.log(compressedImage)
+                    socketRef.current.emit('recognised', { image: compressedImage });
+                    setWarning('');
+                }).catch((error) => {
+                    console.error('Error reducing image size:', error);
+                });
             } else {
                 setWarning('Face not detected!');
             }
