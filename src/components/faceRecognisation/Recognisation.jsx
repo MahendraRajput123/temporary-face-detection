@@ -11,6 +11,7 @@ const FaceRecognition = () => {
     const streamRef = useRef(null);
     const socketRef = useRef(null);
     const [recognisedPerson, setRecognisedPerson] = useState('');
+    const [isPersonDetected, setIsPersonDetected] = useState(false);
 
     const setupCamera = useCallback(async () => {
         const video = videoRef.current;
@@ -91,6 +92,7 @@ const FaceRecognition = () => {
             const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
 
+            setIsPersonDetected(resizedDetections.length > 0 ? true : false);
             if (resizedDetections.length > 0) {
                 context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
                 const base64Image = canvas.toDataURL('image/png');
@@ -160,7 +162,7 @@ const FaceRecognition = () => {
                     <canvas ref={canvasRef} className="hidden"></canvas>
                 </div>
                 <div className="p-4">
-                    {recognisedPerson && recognisedPerson.toLowerCase() !== "unknown" && (
+                    {isPersonDetected && recognisedPerson && recognisedPerson.toLowerCase() !== "unknown" && (
                         <h1 className="text-green-600 text-2xl font-bold text-center mb-4">
                             Recognised Person: {recognisedPerson}
                         </h1>
