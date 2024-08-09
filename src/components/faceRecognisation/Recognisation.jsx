@@ -38,24 +38,60 @@ const FaceRecognition = () => {
         const context = canvas.getContext('2d');
         const displaySize = { width: video.videoWidth, height: video.videoHeight };
         faceapi.matchDimensions(canvas, displaySize);
-
+      
         const detectInterval = setInterval(async () => {
-            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
-
-            setIsPersonDetected(resizedDetections.length > 0 ? true : false);
-            if (resizedDetections.length > 0) {
-                context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const base64Image = canvas.toDataURL('image/png');
-                // Usage
-                socketRef.current.emit('recognised', { image: base64Image });
-            } else {
-                setWarning('Face not detected!');
+          const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+          const resizedDetections = faceapi.resizeResults(detections, displaySize);
+      
+          if (resizedDetections.length > 0) {
+            // Find the closest face
+            let closestFace = resizedDetections[0];
+            let closestDistance = Number.MAX_SAFE_INTEGER;
+      
+            for (const detection of resizedDetections) {
+              const x = detection.box.x;
+              const y = detection.box.y;
+              const distance = Math.sqrt(x * x + y * y);
+              if (distance < closestDistance) {
+                closestFace = detection;
+                closestDistance = distance;
+              }
             }
-        }, 500);
+      
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      
+            // Draw a bounding box around the closest face
+            const { x, y, width, height } = closestFace.box;
+            context.beginPath();
+            context.rect(x, y, width, height);
+            context.strokeStyle = 'green';
+            context.lineWidth = 2;
+            context.stroke();
 
+             // Log the dimensions of the cropped image
+             console.log('Cropped Image Dimensions:', { width, height });
+      
+            // Crop the face region from the canvas
+            const faceCanvas = document.createElement('canvas');
+            faceCanvas.width = width;
+            faceCanvas.height = height;
+            const faceContext = faceCanvas.getContext('2d');
+            faceContext.drawImage(canvas, x, y, width, height, 0, 0, width, height);
+      
+            const base64Image = faceCanvas.toDataURL('image/png');
+            console.log(base64Image,"-----------------------------------base64Image")
+            socketRef.current.emit('recognised', { image: base64Image });
+      
+            setIsPersonDetected(true);
+          } else {
+            setWarning('Face not detected!');
+            setIsPersonDetected(false);
+          }
+        }, 500);
+      
         return () => clearInterval(detectInterval);
-    }, []);
+      }, []);
 
     const releaseResources = useCallback(() => {
         if (streamRef.current) {

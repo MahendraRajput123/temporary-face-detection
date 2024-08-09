@@ -78,13 +78,47 @@ const FaceRegistration = () => {
                 completeRegistration();
                 return;
             }
-
+    
             const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
             const resizedDetections = faceapi.resizeResults(detections, displaySize);
-
+    
+            context.clearRect(0, 0, canvas.width, canvas.height);
+    
             if (resizedDetections.length > 0) {
-                context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-                const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+                // Find the closest face
+                let closestFace = resizedDetections[0];
+                let closestDistance = Number.MAX_SAFE_INTEGER;
+    
+                for (const detection of resizedDetections) {
+                    const x = detection.box.x;
+                    const y = detection.box.y;
+                    const distance = Math.sqrt(x * x + y * y);
+                    if (distance < closestDistance) {
+                      closestFace = detection;
+                      closestDistance = distance;
+                    }
+                }
+    
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+      
+            // Draw a bounding box around the closest face
+            const { x, y, width, height } = closestFace.box;
+            context.beginPath();
+            context.rect(x, y, width, height);
+            context.strokeStyle = 'green';
+            context.lineWidth = 2;
+            context.stroke();
+      
+            // Crop the face region from the canvas
+            const faceCanvas = document.createElement('canvas');
+            faceCanvas.width = width;
+            faceCanvas.height = height;
+            const faceContext = faceCanvas.getContext('2d');
+            faceContext.drawImage(canvas, x, y, width, height, 0, 0, width, height);
+      
+            const base64Image = faceCanvas.toDataURL('image/png');
+            console.log(base64Image,"-----------------------------------base64Image")
                 socketRef.current.emit('registered', { image: base64Image, name: `${name}_${generatedString}` });
                 setCapturedImages(prev => {
                     const newCount = prev + 1;
@@ -98,14 +132,14 @@ const FaceRegistration = () => {
             } else {
                 setWarning('Face not detected!');
             }
-
+    
             requestAnimationFrame(detect);
         };
     
         requestAnimationFrame(detect);
     }, [name, completeRegistration]);
     
-
+    
     useEffect(() => {
         socketRef.current = io('https://ebitsvisionai.in', {
             transports: ['websocket'],
