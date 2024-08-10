@@ -6,19 +6,35 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Main = () => {
   const location = useLocation();
-  const { message } = location.state || {};
+  const { message, error } = location.state || {};
   const navigate = useNavigate();
 
   const showToaster = () => {
-    toast.success(message, {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-    });
+
+    console.log('message', message,"error", error);
+
+    if (message === "Face Register Successfully") {
+        toast.success(message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+    }else{
+        toast.error(message , {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
+
+    }
 
     // Update the location state to remove the message
     navigate(location.pathname, { replace: true, state: {} });
@@ -28,8 +44,7 @@ const Main = () => {
     if (message) {
       showToaster();
     }
-  }
-  , [message]);
+  },[message]);
 
 
   const [showCameraPreview, setShowCameraPreview] = useState(false);
@@ -37,7 +52,7 @@ const Main = () => {
     <div className="flex flex-col items-center justify-start h-screen w-full">
       <ToastContainer />
       {/* <Header /> */}
-      <h1 className='font-bold text-3xl text-black mt-5'>Face Recognisation</h1>
+      <h1 className='font-bold text-3xl text-black mt-5'>Face Recognition</h1>
       {!showCameraPreview && <Form setShowCameraPreview={setShowCameraPreview} />}
     </div>
   );
