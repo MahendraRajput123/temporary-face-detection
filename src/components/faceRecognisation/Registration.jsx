@@ -135,7 +135,7 @@ const FaceRegistration = () => {
                         console.log(frameCount,"-------------------------------------frameCount")
                         socketRef.current.emit('recognised', { image: base64Image });
                         frameCount += 1;
-                } else if (!isRegisterPersonFound)  {
+                } else if (isRegisterPersonFound === false)  {
                     socketRef.current.emit('registered', { image: base64Image, name: `${name}_${generatedString}` });
                     setCapturedImages(prev => {
                         const newCount = prev + 1;
@@ -186,12 +186,10 @@ const FaceRegistration = () => {
             }
             
             if (frameCount === 10 || recognizedCount === 8) {
-                setIsProcessingComplete(true);
                 if (recognizedCount >= 8) {
+                    setIsProcessingComplete(true);
                     isRegisterPersonFound = true;
                     completeRegistration();
-                } else {
-                    isRegisterPersonFound = false;
                 }
             }
         });
