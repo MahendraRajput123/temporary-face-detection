@@ -15,10 +15,10 @@ const FaceRegistration = () => {
     const streamRef = useRef(null);
     const socketRef = useRef(null);
     const intervalRef = useRef(null);
-    let isRegisterPersonFound = false;
-    let frameCount = 0;
-    let recognizedCount = 0;
-    const [isProcessingComplete, setIsProcessingComplete] = useState(false);
+    const isRegisterPersonFoundRef = useRef(false);
+    const eventConfirmForProccessRef = useRef(false);
+    let frameCount = 1;
+
     const [generatedString, setGeneratedString] = useState(() => {
         const digits = '0123456789';
         const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -68,21 +68,18 @@ const FaceRegistration = () => {
         socketRef.current.emit('train', { name: name });
         releaseResources();
 
-        // console.log(recognizedCount, "-------------------------------------recognizedCount");
-
-        if(recognizedCount >= 8){
+        if(isRegisterPersonFoundRef.current === true){
             navigate('/',{ state: { message: "Your face is already registered with us" } });
         }else{
             navigate('/',{ state: { message: "Face Register Successfully" } });
         }
-    }, [name, navigate, releaseResources,isRegisterPersonFound,frameCount, recognizedCount]);
+    }, [name, navigate, releaseResources,isRegisterPersonFoundRef]);
 
     const detectFace = useCallback(async (video) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
         const displaySize = { width: video.videoWidth, height: video.videoHeight };
-        faceapi.matchDimensions(canvas, displaySize);
-    
+        faceapi.matchDimensions(canvas, displaySize);    
         const detect = async () => {
             if (capturedImages >= 25) {
                 completeRegistration();
@@ -129,23 +126,24 @@ const FaceRegistration = () => {
       
             const base64Image = faceCanvas.toDataURL('image/png');
 
-            // console.log("me ------------------------------come",isRegisterPersonFound);
-
-                if (frameCount < 10) {
-                        console.log(frameCount,"-------------------------------------frameCount")
-                        socketRef.current.emit('recognised', { image: base64Image });
+                if (frameCount <= 10) {
+                        socketRef.current.emit('recognized_before_register', { image: base64Image });
                         frameCount += 1;
-                } else if (isRegisterPersonFound === false)  {
+                } else if (isRegisterPersonFoundRef.current === false && frameCount >= 10 && eventConfirmForProccessRef.current === true) {
                     socketRef.current.emit('registered', { image: base64Image, name: `${name}_${generatedString}` });
                     setCapturedImages(prev => {
                         const newCount = prev + 1;
                         if (newCount >= 25) {
-                            completeRegistration();
+                            completeRegistration(); 
                         }
                         setProgressPercentage((newCount / 25) * 100);
                         return newCount;
                     });
                     setWarning('');
+                }else if(isRegisterPersonFoundRef.current === true && frameCount >= 10 && eventConfirmForProccessRef.current === true){
+                    completeRegistration();
+                }else{
+                    console.log("isRegisterPersonFoundRef",isRegisterPersonFoundRef.current, "frameCount", frameCount, "eventConfirmForProccessRef", eventConfirmForProccessRef.current);
                 }
 
             } else {
@@ -156,7 +154,7 @@ const FaceRegistration = () => {
         };
     
         requestAnimationFrame(detect);
-    },[name, completeRegistration, isRegisterPersonFound, frameCount, isProcessingComplete]);
+    },[name, completeRegistration, isRegisterPersonFoundRef,eventConfirmForProccessRef, frameCount]);
     
     
     useEffect(() => {
@@ -178,22 +176,16 @@ const FaceRegistration = () => {
 
 
     useEffect(() => {
-        socketRef.current.on('recognised-person', ({ name }) => {
+        socketRef.current.on('face_status', ({ frame_counter, recognized_person_counter }) => {
 
-            // console.log(name,"-------------------------------------person name")
-            if (name.toLowerCase() !== "unknown") {
-                recognizedCount += 1;
+            if(Number(frame_counter) === 10 && Number(recognized_person_counter) >= 8){
+                // frameCount = 0;
+                isRegisterPersonFoundRef.current = true;
             }
-            
-            if (frameCount === 10 || recognizedCount === 8) {
-                if (recognizedCount >= 8) {
-                    setIsProcessingComplete(true);
-                    isRegisterPersonFound = true;
-                    completeRegistration();
-                }
-            }
+
+            eventConfirmForProccessRef.current = true;
         });
-    }, [socketRef,frameCount, recognizedCount]);
+    }, [socketRef,frameCount, isRegisterPersonFoundRef,eventConfirmForProccessRef]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
