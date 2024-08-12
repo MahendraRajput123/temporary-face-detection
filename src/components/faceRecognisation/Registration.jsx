@@ -160,7 +160,7 @@ const FaceRegistration = () => {
     
     
     useEffect(() => {
-        socketRef.current = io('http://localhost:5000', {
+        socketRef.current = io('https://ebitsvisionai.in', {
             transports: ['websocket'],
             reconnection: true,
             reconnectionAttempts: 5
