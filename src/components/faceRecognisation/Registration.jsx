@@ -21,6 +21,8 @@ const FaceRegistration = () => {
     const [showAlertTimer, setShowAlertTimer] = useState(true);
     let frameCount = 1;
 
+    console.log(showAlertTimer,"-----------------------------showAlertTimer Added debbuger")
+
     const [generatedString, setGeneratedString] = useState(() => {
         const digits = '0123456789';
         const alphanumeric = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
