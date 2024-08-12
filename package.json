@@ -16,6 +16,8 @@
     "react-toastify": "^10.0.5",
     "react-use-face-detection": "^1.0.1",
     "socket.io-client": "^4.7.5",
+    "sweetalert2": "^11.12.4",
+    "sweetalert2-react-content": "^5.0.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
