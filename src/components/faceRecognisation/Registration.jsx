@@ -146,7 +146,12 @@ const FaceRegistration = () => {
                     setWarning('');
                 }else if(isRegisterPersonFoundRef.current === true && frameCount >= 10 && eventConfirmForProccessRef.current === true){
                     setShowAlertTimer(false);
-                    completeRegistration();
+
+                    setTimeout(() => {
+                        completeRegistration();
+                    }, 1000);
+
+                    console.log("--------------------------------------->person already registered",isRegisterPersonFoundRef.current, frameCount, eventConfirmForProccessRef.current);
                 }else{
                     console.log("isRegisterPersonFoundRef",isRegisterPersonFoundRef.current, "frameCount", frameCount, "eventConfirmForProccessRef", eventConfirmForProccessRef.current);
                 }
@@ -187,6 +192,7 @@ const FaceRegistration = () => {
 
             if (Number(frame_counter) === 10 && Number(recognized_person_counter) >= 8) {
                 // frameCount = 0;
+                console.log("recognized_person_counter------------------------------------>",recognized_person_counter)
                 isRegisterPersonFoundRef.current = true;
                 setShowAlertTimer(false);
             }
