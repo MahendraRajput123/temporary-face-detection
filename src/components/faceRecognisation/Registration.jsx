@@ -149,6 +149,7 @@ const FaceRegistration = () => {
                     completeRegistration();
                 }else{
                     console.log("isRegisterPersonFoundRef",isRegisterPersonFoundRef.current, "frameCount", frameCount, "eventConfirmForProccessRef", eventConfirmForProccessRef.current);
+                    setShowAlertTimer(false);
                 }
 
             } else {
