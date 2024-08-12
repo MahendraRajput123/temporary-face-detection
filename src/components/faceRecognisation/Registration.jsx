@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as faceapi from 'face-api.js';
 import io from 'socket.io-client';
 import { useLocation, useNavigate } from "react-router-dom";
+import ShowAlert from "./AlertTimer"
 
 const FaceRegistration = () => {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ const FaceRegistration = () => {
     const intervalRef = useRef(null);
     const isRegisterPersonFoundRef = useRef(false);
     const eventConfirmForProccessRef = useRef(false);
+    const [showAlertTimer, setShowAlertTimer] = useState(true);
     let frameCount = 1;
 
     const [generatedString, setGeneratedString] = useState(() => {
@@ -158,8 +160,10 @@ const FaceRegistration = () => {
     
     
     useEffect(() => {
-        socketRef.current = io('https://ebitsvisionai.in', {
+        socketRef.current = io('http://localhost:5000', {
             transports: ['websocket'],
+            reconnection: true,
+            reconnectionAttempts: 5
         });
 
         (async () => {
@@ -178,18 +182,25 @@ const FaceRegistration = () => {
     useEffect(() => {
         socketRef.current.on('face_status', ({ frame_counter, recognized_person_counter }) => {
 
-            if(Number(frame_counter) === 10 && Number(recognized_person_counter) >= 8){
+            if (Number(frame_counter) === 10 && Number(recognized_person_counter) >= 8) {
                 // frameCount = 0;
                 isRegisterPersonFoundRef.current = true;
+                setShowAlertTimer(false);
+            }
+
+            if (Number(frame_counter) === 10 && Number(recognized_person_counter) < 8) {
+                setShowAlertTimer(false);
             }
 
             eventConfirmForProccessRef.current = true;
         });
-    }, [socketRef,frameCount, isRegisterPersonFoundRef,eventConfirmForProccessRef]);
+    }, [socketRef, frameCount, isRegisterPersonFoundRef, eventConfirmForProccessRef,showAlertTimer]);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <div className="w-full sm:w-3/4 lg:w-1/2 p-4 bg-white rounded-lg shadow-md">
+            <ShowAlert showAlertTimer={showAlertTimer} setShowAlertTimer={setShowAlertTimer} />
+
+            <div className={`w-full sm:w-3/4 lg:w-1/2 p-4 bg-white rounded-lg shadow-md ${!isRegisterPersonFoundRef.current && eventConfirmForProccessRef.current ? null : 'hidden'}`}>
                 <video
                     ref={videoRef}
                     className="w-full h-auto mx-auto rounded-lg"
