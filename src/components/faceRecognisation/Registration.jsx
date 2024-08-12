@@ -145,6 +145,7 @@ const FaceRegistration = () => {
                     });
                     setWarning('');
                 }else if(isRegisterPersonFoundRef.current === true && frameCount >= 10 && eventConfirmForProccessRef.current === true){
+                    setShowAlertTimer(false);
                     completeRegistration();
                 }else{
                     console.log("isRegisterPersonFoundRef",isRegisterPersonFoundRef.current, "frameCount", frameCount, "eventConfirmForProccessRef", eventConfirmForProccessRef.current);
