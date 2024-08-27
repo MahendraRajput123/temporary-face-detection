@@ -70,7 +70,16 @@ const Form = () => {
                         onChange={(e) => setName(e.target.value)}
                     />
 
-                    <button className="inline-flex text-white bg-blue-700 border-0 py-2 px-6 max-sm:px-2 max-sm:text-[1rem] max-sm:m-auto focus:outline-none hover:bg-blue-600 rounded text-lg" onClick={onSubmit}>Start Capturing</button>
+                        <button className="inline-flex text-white bg-blue-700 border-0 py-2 px-6 max-sm:px-2 max-sm:text-[1rem] max-sm:m-auto focus:outline-none hover:bg-blue-600 rounded text-lg" onClick={onSubmit}>
+                            <div className='flex justify-between items-center'>
+                                <img
+                                    src={require("../../assets/camera.png")}
+                                    alt="background"
+                                    className='w-5 h-5 object-cover'
+                                />
+                                <span className='mx-3'>Start Capturing</span>
+                            </div>
+                        </button>
                 </div>
             }
 
