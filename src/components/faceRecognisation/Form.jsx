@@ -34,7 +34,7 @@ const Form = () => {
                 <img
                     src={require("../../assets/face-dectection.jpg")}
                     alt="background"
-                    className='w-[60rem] max-md:max-w-xl my-5 object-cover'
+                    className='w-[60rem] max-xl:max-w-xl my-5 object-cover'
                 />
             }
 
