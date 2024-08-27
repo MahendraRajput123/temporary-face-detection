@@ -75,7 +75,7 @@ const Form = () => {
                                 <img
                                     src={require("../../assets/camera.png")}
                                     alt="background"
-                                    className='w-5 h-5 object-cover'
+                                    className='w-6 h-6 object-cover'
                                 />
                                 <span className='mx-3'>Start Capturing</span>
                             </div>
@@ -85,8 +85,10 @@ const Form = () => {
 
             {
                 btnIndex === 1 &&
-                 <h1 className='font-bold mt-10 text-2xl mx-8'>
+                 <h1 className='font-bold mt-10 text-2xl mx-20 max-sm:mx-8'>
                   <span className='text-red-700 font-extrabold'>Note:-</span> Please keep your face in the centre of the camera. The registration process will take only 8 seconds. 
+
+                  To ensure full access to the system, a camera must be integrated and operational within your setup. Please enable access to the camera as it is essential for complete system functionality.
                  </h1>
              }
         </>
