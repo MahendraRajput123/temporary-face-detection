@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 const Form = () => {
     const [name, setName] = useState('');
@@ -9,13 +10,29 @@ const Form = () => {
 
     const onSubmit = () => {
         if (name.trim() === "") {
-            alert('Please enter your name');
             setName(name.trim());
+            toast.error('Please enter your name' , {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             return;
         }
         
         if (!namePattern.test(name)) {
-            alert('Name can only contain letters and spaces');
+            toast.error('Name can only contain letters and spaces' , {
+                position: "top-right",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
             return;
         }
         
@@ -85,7 +102,7 @@ const Form = () => {
 
             {
                 btnIndex === 1 &&
-                 <h1 className='font-bold mt-10 text-2xl mx-20 max-sm:mx-8'>
+                 <h1 className='font-bold mt-10 text-xl mx-20 max-sm:mx-8'>
                   <span className='text-red-700 font-extrabold'>Note:-</span> Please keep your face in the centre of the camera. The registration process will take only 8 seconds. 
 
                   To ensure full access to the system, a camera must be integrated and operational within your setup. Please enable access to the camera as it is essential for complete system functionality.
