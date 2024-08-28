@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import * as faceapi from 'face-api.js';
 import io from 'socket.io-client';
 import { useNavigate } from "react-router-dom";
+import ShowAlert from "./AlertTimer"
 
 const FaceRecognition = () => {
     const navigate = useNavigate();
@@ -12,19 +13,60 @@ const FaceRecognition = () => {
     const socketRef = useRef(null);
     const [recognisedPerson, setRecognisedPerson] = useState('');
     const [isPersonDetected, setIsPersonDetected] = useState(false);
+    const [showAlertTimer, setShowAlertTimer] = useState(false);
+    const [isClientConnectedServer, setIsClientConnectedServer] = useState(false);
+    const [cameraError, setCameraError] = useState({ hasError: false, message: '' });
+
+    const moveToHome = useCallback(() => {
+        setCameraError({ hasError: false, message: null });
+        setShowAlertTimer(false);
+        releaseResources();
+        let message = null
+        // if (isRegisterPersonFoundRef.current === true) {
+        //     message = "Your face is already registered with us";
+        // } else if(eventConfirmForProccessRef.current && isRegisterPersonFoundRef.current === false) {
+        //     message = "Face Register Successfully";
+        // }
+
+        setTimeout(() => {
+            navigate('/', { state: { message } });
+        }, 50);
+    }, [showAlertTimer]);
 
     const setupCamera = useCallback(async () => {
         const video = videoRef.current;
-        const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-        video.srcObject = stream;
-        streamRef.current = stream;
+        try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('MediaDevices interface not available');
+            }
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            video.srcObject = stream;
+            streamRef.current = stream;
+            return new Promise((resolve) => {
+                video.onloadedmetadata = () => {
+                    video.play();
+                    resolve(video);
+                };
+            });
+        } catch (error) {
+            console.error('Error accessing camera:', error.name, error.message);
+            let errorMessage = null;
+            if (error instanceof DOMException) {
+                if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
+                    errorMessage = 'No camera found on this device. Please connect a camera and try again.';
+                } else if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                    errorMessage = 'Camera access denied. Please grant permission to use the camera.';
+                } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
+                    errorMessage = 'The camera is in use by another application. Please close other apps using the camera.';
+                }
+            }
 
-        return new Promise((resolve) => {
-            video.onloadedmetadata = () => {
-                video.play();
-                resolve(video);
-            };
-        });
+            if (errorMessage) {
+                setShowAlertTimer(true);
+                setCameraError({ hasError: true, message: errorMessage });
+            }
+            return null;
+        }
     }, []);
 
     const loadModels = useCallback(async () => {
@@ -105,6 +147,11 @@ const FaceRecognition = () => {
     useEffect(() => {
         socketRef.current = io('https://ebitsvisionai.in', {
             transports: ['websocket'],
+            // reconnection: true,
+            // reconnectionAttempts: Infinity,
+            // reconnectionDelay: 1000,
+            // reconnectionDelayMax: 5000,
+            // timeout: 5000,
         });
 
         socketRef.current.on('recognised-person', ({ name }) => {
@@ -112,10 +159,33 @@ const FaceRecognition = () => {
             setRecognisedPerson(name);
         });
 
+        // socketRef.current.on('connect', () => {
+        //     console.log('Connected to server');
+        //     setIsClientConnectedServer(true);
+        //     setShowAlertTimer(false);
+        // });
+
+        // socketRef.current.on('disconnect', () => {
+        //     console.log('Disconnected from server');
+        //     setIsClientConnectedServer(false);
+        //     setShowAlertTimer(true);
+        // });
+
+        // socketRef.current.on('connect_error', (error) => {
+        //     console.log('Connection error:', error);
+        //     if (!isClientConnectedServer && !showAlertTimer) {
+        //         console.log('Connection error---------------------mahendra:', error);
+        //         setIsClientConnectedServer(false);
+        //         setShowAlertTimer(true);
+        //     }
+        //   });
+
         (async () => {
             await loadModels();
             const video = await setupCamera();
-            detectFace(video);
+            if (video) {
+                detectFace(video);
+            }
         })();
 
         return () => {
@@ -123,15 +193,12 @@ const FaceRecognition = () => {
         };
     }, []);
 
-    const handleBackButton = () => {
-        releaseResources();
-        navigate('/');
-    };
-
     return (
         <div className="flex flex-col items-center justify-center w-full min-h-screen bg-gray-100 p-4">
-            <div className="w-full max-w-3xl bg-white rounded-lg shadow-md overflow-hidden">
+            <ShowAlert cameraError={cameraError} showAlertTimer={showAlertTimer} setShowAlertTimer={setShowAlertTimer} isClientConnectedServer={isClientConnectedServer} moveToHome={moveToHome} recognisedComponent={true}/>
+            <div className={`w-full max-w-3xl bg-white rounded-lg shadow-md overflow-hidden ${showAlertTimer ? 'hidden' : null}`}>
                 <div className="relative">
+
                     <video 
                         ref={videoRef} 
                         className="w-full h-auto"
@@ -148,7 +215,7 @@ const FaceRecognition = () => {
                         </h1>
                     )}
                     <button 
-                        onClick={handleBackButton} 
+                        onClick={()=> moveToHome()} 
                         className="w-full mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
                     >
                         Back

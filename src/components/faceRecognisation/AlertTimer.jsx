@@ -5,20 +5,20 @@ import IconError from '../Icons/icon-error';
 // Import your face recognition GIF
 import faceRecognitionGif from './face-scanner.gif';
 
-const AlertTimer = ({ showAlertTimer, setShowAlertTimer, isClientConnectedServer, cameraError, moveToHome }) => {
+const AlertTimer = ({ showAlertTimer, setShowAlertTimer, isClientConnectedServer, cameraError, moveToHome, recognisedComponent = false}) => {
   const ReactSwal = withReactContent(Swal);
   const {hasError, message} = cameraError;
 
-  console.log('Camera Error:----------------------------Alert Component', hasError, message);
+  console.log(`showAlertTimer : ${showAlertTimer}, isClientConnectedServer : ${isClientConnectedServer}, cameraError : ${hasError}, recognisedComponent : ${recognisedComponent}----------------------------Alert Component`);
 
   useEffect(() => {
     if (hasError && showAlertTimer) {
       showCameraAlert();
-    }else if (isClientConnectedServer && !hasError && showAlertTimer) {
+    }else if (isClientConnectedServer && !hasError && showAlertTimer && !recognisedComponent) {
       showConnectedAlert();
     } else if(!isClientConnectedServer && showAlertTimer && !hasError) {
       showDisconnectedAlert();
-    }else if(showAlertTimer){
+    }else if(showAlertTimer && !recognisedComponent){
       showSomethingWentWrongAlert();
     }
   }, [isClientConnectedServer,cameraError]);
