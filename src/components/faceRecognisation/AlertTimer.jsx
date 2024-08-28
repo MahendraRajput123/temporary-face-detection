@@ -1,16 +1,27 @@
 import React, { useEffect } from 'react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-
+import IconError from '../Icons/icon-error';
 // Import your face recognition GIF
 import faceRecognitionGif from './face-scanner.gif';
 
-const AlertTimer = ({ showAlertTimer, setShowAlertTimer }) => {
+const AlertTimer = ({ showAlertTimer, setShowAlertTimer, isClientConnectedServer, cameraError, moveToHome }) => {
   const ReactSwal = withReactContent(Swal);
+  const {hasError, message} = cameraError;
+
+  console.log('Camera Error:----------------------------Alert Component', hasError, message);
 
   useEffect(() => {
-    showAlert();
-  }, []);
+    if (hasError && showAlertTimer) {
+      showCameraAlert();
+    }else if (isClientConnectedServer && !hasError && showAlertTimer) {
+      showConnectedAlert();
+    } else if(!isClientConnectedServer && showAlertTimer && !hasError) {
+      showDisconnectedAlert();
+    }else if(showAlertTimer){
+      showSomethingWentWrongAlert();
+    }
+  }, [isClientConnectedServer,cameraError]);
 
   useEffect(() => {
     if (showAlertTimer === false) {
@@ -19,7 +30,7 @@ const AlertTimer = ({ showAlertTimer, setShowAlertTimer }) => {
     }
   }, [showAlertTimer]);
 
-  const showAlert = () => {
+  const showConnectedAlert = () => {
     ReactSwal.fire({
       title: "Let's evaluate your face...",
       html: (
@@ -30,7 +41,6 @@ const AlertTimer = ({ showAlertTimer, setShowAlertTimer }) => {
       showConfirmButton: false,
       allowOutsideClick: false,
       allowEscapeKey: false,
-      timer: 15000, // 15 second
       timerProgressBar: true,
       didOpen: () => {
         Swal.showLoading();
@@ -41,6 +51,72 @@ const AlertTimer = ({ showAlertTimer, setShowAlertTimer }) => {
       }
     });
   };
+  
+  const showDisconnectedAlert = () => {
+    ReactSwal.fire({
+      title: null,
+      html: (
+        <div className='w-full flex justify-center items-center flex-col space-y-3'>
+          <IconError className='w-12 h-12 text-red-500' />
+          <p className='text-[#545454] font-bold text-2xl'>Connection Error</p>
+          <p>Failed to connect to the server. Please contact higher authorities.</p>
+          <button 
+            onClick={()=>moveToHome()}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+          >
+            Go Back Home
+          </button>
+        </div>
+      ),
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+  };
+
+  const showCameraAlert = () => {
+    ReactSwal.fire({
+      title: null,
+      html: (
+        <div className='w-full flex justify-center items-center flex-col space-y-3'>
+          <IconError className='w-12 h-12 text-red-500' />
+          <p className='text-[#545454] font-bold text-2xl'>Camera Access Error</p>
+          <p>{message}.</p>
+          <button 
+            onClick={()=> moveToHome()}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+          >
+            Go Back Home
+          </button>
+        </div>
+      ),
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+  };
+
+  const showSomethingWentWrongAlert = () => {
+    ReactSwal.fire({
+      title: null,
+      html: (
+        <div className='w-full flex justify-center items-center flex-col space-y-3'>
+          <IconError className='w-12 h-12 text-red-500' />
+          <p className='text-[#545454] font-bold text-2xl'>Something Went Wrong</p>
+          <p>Unable to connect to the server. Please contact with higher authorities.</p>
+          <button 
+            onClick={()=> moveToHome()}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-200"
+          >
+            Go Back Home
+          </button>
+        </div>
+      ),
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
+  }
 
   return null;
 };

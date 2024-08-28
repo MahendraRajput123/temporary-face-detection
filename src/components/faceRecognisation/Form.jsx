@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import IconCamera from '../Icons/icon-camera';
 
 const Form = () => {
     const [name, setName] = useState('');
@@ -89,11 +90,7 @@ const Form = () => {
 
                         <button className="inline-flex text-white bg-blue-700 border-0 py-2 px-6 max-sm:px-2 max-sm:text-[1rem] max-sm:m-auto focus:outline-none hover:bg-blue-600 rounded text-lg" onClick={onSubmit}>
                             <div className='flex justify-between items-center'>
-                                <img
-                                    src={require("../../assets/camera.png")}
-                                    alt="background"
-                                    className='w-6 h-6 object-cover'
-                                />
+                                <IconCamera className="text-white" iconColor="#ffffff"/>
                                 <span className='mx-3'>Start Capturing</span>
                             </div>
                         </button>
