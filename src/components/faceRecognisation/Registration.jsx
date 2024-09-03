@@ -40,6 +40,17 @@ const FaceRegistration = () => {
         return result;
     });
 
+    // When User press browser back button then reload the page to release all resources
+    useEffect(() => {
+        const handleBackButton = (event) => {
+          window.location.reload();
+        };
+    
+        window.onpopstate = handleBackButton;
+    
+      }, [navigate]);
+
+
 
     const setupCamera = useCallback(async () => {
         const video = videoRef.current;

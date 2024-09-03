@@ -9,6 +9,31 @@ const Main = () => {
   const { message, error } = location.state || {};
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (location.pathname === '/') {
+      // Clear forward history
+      window.history.pushState(null, '', '/');
+      
+      // Prevent going back
+      window.history.pushState(null, '', '/');
+    }
+  }, [location]);
+
+  useEffect(() => {
+    const handlePopState = (event) => {
+      if (window.location.pathname === '/') {
+        // Prevent going back from root
+        navigate('/', { replace: true });
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navigate]);
+
   const showToaster = () => {
 
     console.log('message', message,"error", error);
