@@ -19,7 +19,7 @@ const FaceRegistration = () => {
     const isRegisterPersonFoundRef = useRef(false);
     const eventConfirmForProccessRef = useRef(false);
     const [showAlertTimer, setShowAlertTimer] = useState(true);
-    const [isClientConnectedServer, setIsClientConnectedServer] = useState(false);
+    const [isClientConnectedServer, setIsClientConnectedServer] = useState(true);
     const [cameraError, setCameraError] = useState({ hasError: false, message: '' });
     let frameCount = 1;
 

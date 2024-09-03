@@ -82,8 +82,8 @@ const Form = () => {
                         type="text"
                         id="hero-field"
                         name="hero-field"
-                        className="max-sm:w-8/12 max-sm:m-auto max-sm:my-4 w-full sm:w-1/2 bg-transparent rounded border bg-opacity-50 border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:bg-transparent focus:border-indigo-500 text-base outline-none text-black py-1 px-3 leading-8 transition-colors duration-200 ease-in-out placeholder-black"
-                        placeholder="Enter Name"
+                        className="max-sm:w-8/12 max-sm:m-auto max-sm:my-4 w-full sm:w-1/2 bg-transparent rounded border bg-opacity-50 border-gray-300 focus:ring-2 focus:ring-indigo-200 focus:bg-transparent focus:border-indigo-500 text-base outline-none text-black py-1 px-3 leading-8 transition-colors duration-200 ease-in-out placeholder-black placeholder:font-bold"
+                        placeholder="Enter Name *"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                     />
