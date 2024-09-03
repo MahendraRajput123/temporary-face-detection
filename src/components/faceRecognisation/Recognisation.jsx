@@ -209,9 +209,9 @@ const FaceRecognition = () => {
                     <canvas ref={canvasRef} className="hidden"></canvas>
                 </div>
                 <div className="p-4">
-                    {isPersonDetected && recognisedPerson && recognisedPerson.toLowerCase() !== "unknown" && (
+                    {isPersonDetected && recognisedPerson && (
                         <h1 className="text-green-600 text-2xl font-bold text-center mb-4">
-                            Recognised Person: {recognisedPerson}
+                            Recognised Person: <span className={`${recognisedPerson.toLowerCase() === "unknown"? "text-red-600":null}`}>{recognisedPerson}</span>
                         </h1>
                     )}
                     <button 
